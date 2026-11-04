@@ -2,7 +2,7 @@
 # The port layer shared with the HeartGold/SoulSilver port (game adapter: src/port/game_platinum.c).
 # Pinned: bump together with the Platinum side of each module move
 url = https://github.com/SilasMayes/port-common.git
-revision = 314095d07f6644e3991193f6ac128a37c5c1ab02
+revision = 9d60ba999112cecf2e13cdadd520aa2f12045e21
 depth = 1
 directory = port-common
 

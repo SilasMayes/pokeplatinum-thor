@@ -7,7 +7,7 @@ This repository mixes code from several sources under different terms.
 | The fork's own code: `src/port/`, `include/port/`, `android/`, `tools/android/`, `tools/scripts/bin2c.py`, `tools/scripts/copy_licenses.sh` | Silas Mayes | MIT | [LICENSE](LICENSE) |
 | The decompiled game code and data (`src/`, `include/`, `asm/`, `res/`, ...) | [pret/pokeplatinum](https://github.com/pret/pokeplatinum) | None. The decompilation carries no license. | — |
 | PC port changes to the decompilation | [cybervisi0n/pokeplatinum](https://github.com/cybervisi0n/pokeplatinum) | None stated | — |
-| [port-common](https://github.com/SilasMayes/port-common) (meson subproject) | Silas Mayes | MIT | in that repo |
+| [port-common](https://github.com/SilasMayes/port-common) (meson subproject: save slots, autosave, cheats, the Gear UI...) | Silas Mayes | MIT | [licenses/port-common.txt](licenses/port-common.txt) |
 
 *Pokémon* and *Pokémon Platinum* are trademarks and copyrights of Nintendo, Game Freak and Creatures. This
 project is not affiliated with or endorsed by them, or by pret or cybervisi0n.
@@ -27,7 +27,7 @@ archives do this in a `licenses/` folder, built from the files listed here.
 | [RapidJSON](https://github.com/Tencent/rapidjson) 1.1.0 | JSON | MIT (plus the notices in its file) | [licenses/rapidjson.txt](licenses/rapidjson.txt) |
 | [Dear ImGui](https://github.com/ocornut/imgui) (bundled in libntr) | settings, Gear and debug UI | MIT | [licenses/dear-imgui.txt](licenses/dear-imgui.txt) |
 | Other code bundled in libntr (`libraries/sim/src/`): blip_buf (LGPL-2.1), fireflower (BSD-3-Clause), ImGuiFileDialog, stb, glad | audio resampling, sound, file dialogs, images, GL loading | see each folder in libntr | in libntr |
-| [Atkinson Hyperlegible](https://brailleinstitute.org/freefont) | the Gear and settings font | SIL Open Font License 1.1 | [res/pc_port/fonts/AtkinsonHyperlegible-OFL.txt](res/pc_port/fonts/AtkinsonHyperlegible-OFL.txt) |
+| [Atkinson Hyperlegible](https://brailleinstitute.org/freefont) (embedded by port-common) | the Gear and settings font | SIL Open Font License 1.1 | [licenses/AtkinsonHyperlegible-OFL.txt](licenses/AtkinsonHyperlegible-OFL.txt) |
 
 blip_buf is LGPL-2.1 and is linked statically. Its source, and the source of everything it is linked with, is in
 this repository and its subprojects, so the build can be redone with a modified copy.

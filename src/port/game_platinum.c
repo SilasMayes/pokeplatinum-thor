@@ -99,6 +99,31 @@ BOOL PortGame_Config_GetNuzlocke(PortNuzlockeConfig *out)
     return TRUE;
 }
 
+BOOL PortGame_Config_GetGear(PortGearConfig *out)
+{
+    const SIM_Config_prj_type *config = SIM_Config_prj_GetConfig();
+    if (config == NULL) {
+        return FALSE;
+    }
+    out->enabled = config->gearEnabled;
+    out->discovery = config->gearDiscovery;
+    out->battleControls = config->gearBattleControls;
+    out->hardLevelCap = config->hardLevelCap;
+    return TRUE;
+}
+
+void PortGame_Config_SetGear(const PortGearConfig *in)
+{
+    SIM_Config_prj_type *config = SIM_Config_prj_GetConfig();
+    if (config == NULL) {
+        return;
+    }
+    config->gearEnabled = in->enabled;
+    config->gearDiscovery = in->discovery;
+    config->gearBattleControls = in->battleControls;
+    SIM_Config_prj_SaveConfigFile(config);
+}
+
 BOOL PortGame_Config_GetAutosave(PortAutosaveConfig *out)
 {
     const SIM_Config_prj_type *config = SIM_Config_prj_GetConfig();

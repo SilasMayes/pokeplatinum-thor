@@ -1014,15 +1014,6 @@ pokeplatinum_c = files(
 )
 
 if(build_target != 'arm')
-# Fonts for the Gear companion (SIL Open Font License, see res/pc_port/fonts)
-pokeplatinum_c += custom_target('gear_fonts',
-    input: files(
-        '../res/pc_port/fonts/AtkinsonHyperlegible-Regular.ttf',
-        '../res/pc_port/fonts/AtkinsonHyperlegible-Bold.ttf',
-    ),
-    output: 'gear_fonts.c',
-    command: [bin2c_py, '@OUTPUT@', '@INPUT@'],
-)
 pokeplatinum_c += files(
     'port/charcode_convert.c',
     'port/debug_field.c',
@@ -1045,7 +1036,6 @@ pokeplatinum_c += files(
     'port/gui_saves.cpp',
     'port/gui_settings.cpp',
     'port/gear_data.c',
-    'port/gear_ui.cpp',
     'port/save_editor.c',
     'port/gui_save_editor.cpp',
     'port/sim_config_prj.c',

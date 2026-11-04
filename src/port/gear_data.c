@@ -9,6 +9,7 @@
 #include "constants/battle.h"
 #include "constants/battle/condition.h"
 #include "constants/charcode.h"
+#include "constants/map_object.h"
 #include "constants/heap.h"
 #include "constants/narc.h"
 #include "constants/species.h"
@@ -22,6 +23,7 @@
 #include "generated/move_attributes.h"
 #include "generated/text_banks.h"
 #include "generated/trainers.h"
+#include "generated/genders.h"
 #include "generated/time_of_day.h"
 
 #include "battle/battle_context.h"
@@ -33,6 +35,9 @@
 #include "field/field_system.h"
 #include "overlay006/wild_encounters.h"
 #include "port/debug_field.h"
+#include "port/gba_slot.h"
+#include "port/gear_map.h"
+#include "port/rom_patches.h"
 
 #include "charcode_convert.h"
 #include "location.h"
@@ -55,6 +60,29 @@
 #include "system_vars.h"
 #include "trainer_data.h"
 #include "trainer_info.h"
+
+// port-common's Gear (port/gear_data.h, port/gear_map.h) uses the Gen 4 values by name
+_Static_assert(GEAR_CONDITION_SLEEP == MON_CONDITION_SLEEP, "sleep bits");
+_Static_assert(GEAR_CONDITION_POISON == MON_CONDITION_POISON, "poison bit");
+_Static_assert(GEAR_CONDITION_BURN == MON_CONDITION_BURN, "burn bit");
+_Static_assert(GEAR_CONDITION_FREEZE == MON_CONDITION_FREEZE, "freeze bit");
+_Static_assert(GEAR_CONDITION_PARALYSIS == MON_CONDITION_PARALYSIS, "paralysis bit");
+_Static_assert(GEAR_CONDITION_TOXIC == MON_CONDITION_TOXIC, "toxic bit");
+_Static_assert(GEAR_GENDER_MALE == GENDER_MALE && GEAR_GENDER_FEMALE == GENDER_FEMALE && GEAR_GENDER_NONE == GENDER_NONE, "genders");
+_Static_assert(GEAR_TIMEOFDAY_MORNING == TIMEOFDAY_MORNING && GEAR_TIMEOFDAY_DAY == TIMEOFDAY_DAY && GEAR_TIMEOFDAY_TWILIGHT == TIMEOFDAY_TWILIGHT
+        && GEAR_TIMEOFDAY_NIGHT == TIMEOFDAY_NIGHT && GEAR_TIMEOFDAY_LATE_NIGHT == TIMEOFDAY_LATE_NIGHT, "times of day");
+_Static_assert(GEAR_DIR_NORTH == DIR_NORTH && GEAR_DIR_SOUTH == DIR_SOUTH && GEAR_DIR_WEST == DIR_WEST && GEAR_DIR_EAST == DIR_EAST, "directions");
+
+BOOL Gear_TypeNineIsFairy(void)
+{
+    return RomPatches_Info()->extraType;
+}
+
+const char *Gear_GBASlotGameName(void)
+{
+    const int game = GBASlot_Game();
+    return game != GBA_SLOT_NONE ? GBASlot_GameName(game) : NULL;
+}
 
 // Implemented in src/battle/battle_lib.c (port only)
 int BattleLib_SingleTypeMultiplier(u8 attackType, u8 defenderType);

@@ -3,6 +3,8 @@
 
 #include <nitro/types.h>
 
+#include "port/gear_data.h" // GearDiscovery
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -52,12 +54,6 @@ typedef struct {
     // GBA slot section (port/gba_slot.h)
     int gbaSlotGame; // GBA_SLOT_*: the GBA game in the DS's GBA slot
 } SIM_Config_prj_type;
-
-enum {
-    GEAR_DISCOVERY_VANILLA = 0,   // only what the game itself tells you
-    GEAR_DISCOVERY_GUIDE = 1,     // encounter guide; unseen species stay hidden
-    GEAR_DISCOVERY_EVERYTHING = 2 // everything, including IVs/EVs and unseen species
-};
 
 void SIM_Config_prj_LoadDefaults(SIM_Config_prj_type * aConfig);
 BOOL SIM_Config_prj_LoadConfigFile(SIM_Config_prj_type * aConfig);
