@@ -141,6 +141,15 @@ if get_option('logging_enabled')
     ]
 endif
 
+# The desktop gate's ASan/UBSan build (as in pokeheartgold): the game code only. b_sanitize would
+# instrument libntr too, whose emulated hardware registers are separate globals that its DMA and
+# clear code read across (an ASan report in MI_Init before the game starts).
+sanitize_args = []
+if get_option('port_sanitize') != ''
+    sanitize_args = ['-fsanitize=' + get_option('port_sanitize'), '-fno-omit-frame-pointer']
+endif
+pokeplatinum_args += sanitize_args
+
 asm_args = [
     '-proc', 'arm5TE',
     '-16',
@@ -447,6 +456,7 @@ main = executable('main',
     c_args: [
         pokeplatinum_args,
     ],
+    cpp_args: sanitize_args,
     c_pch: 'include/pch/global_pch.h',
     include_directories: [
         public_includes,
@@ -474,6 +484,7 @@ main = executable('main',
     ],
     link_args: [
         link_args,
+        sanitize_args,
     ],
     link_depends: main_lcf,
     native: true

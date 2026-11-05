@@ -182,9 +182,26 @@ void Heap_Destroy(enum HeapID heapID)
     }
 }
 
+#ifdef SDK_PORT
+// The DS asks for 4-byte blocks; here the structs hold pointers and 64-bit fields, which want 8
+// (UBSan reports every access otherwise, and arm64 faults on unaligned atomics). 16 as the arenas
+// (libntr 4dc22b0) and as in pokeheartgold, the sign kept (negative = from the heap's end).
+// MemoryBlock is 16 bytes, so the pointer handed out stays 16-aligned.
+static s32 PortHeapAlignment(s32 alignment)
+{
+    if (alignment >= 0) {
+        return alignment < 16 ? 16 : alignment;
+    }
+    return alignment > -16 ? -16 : alignment;
+}
+#endif
+
 static void *AllocFromHeapInternal(NNSFndHeapHandle heap, u32 size, s32 alignment, enum HeapID heapID)
 {
     GF_ASSERT(heap != NNS_FND_HEAP_INVALID_HANDLE);
+#ifdef SDK_PORT
+    alignment = PortHeapAlignment(alignment);
+#endif
 
     OSIntrMode intrMode = OS_DisableInterrupts();
     size += sizeof(MemoryBlock);
@@ -308,6 +325,9 @@ void HeapExp_FndInitAllocator(NNSFndAllocator *pAllocator, u32 heapID, int align
 {
     if ((u32)heapID < sHeapInfo.totalNumHeaps) {
         u8 index = sHeapInfo.heapIdxs[heapID];
+#ifdef SDK_PORT
+        alignment = PortHeapAlignment(alignment);
+#endif
         NNS_FndInitAllocatorForExpHeap(pAllocator, sHeapInfo.heapHandles[index], alignment);
         return;
     }

@@ -2178,7 +2178,14 @@ void Window_CopyGlyph(Window *window, const u8 *glyphPixels, u16 srcWidth, u16 s
             return;
         }
     } else {
+#ifdef SDK_PORT
+        // srcWidth and srcHeight are in pixels, so the DS converts up to 64 times the glyph's 128 bytes
+        // (2x2 tiles at 4bpp, all that the copies below read) and reads past its buffer
+        // (ASan: the Trainer Card's text). Only the glyph is converted here.
+        u8 *convertedSrc = Convert4bppTo8bpp(glyphPixels, 2 * 2 * TILE_SIZE_4BPP, window->palette, window->bgConfig->heapID); // TextGlyph.gfx
+#else
         u8 *convertedSrc = Convert4bppTo8bpp(glyphPixels, srcWidth * 4 * srcHeight * 8, window->palette, window->bgConfig->heapID);
+#endif
         switch (glyphSizeParam) {
         case 0: // 1x1
             CopyGlyph8bpp(convertedSrc, 0, 0, srcRight, srcBottom, windowPixels, destX, destY, ConvertPixelsToTiles(destWidth), table);
