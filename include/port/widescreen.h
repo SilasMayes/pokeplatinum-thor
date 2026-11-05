@@ -8,14 +8,13 @@
 // the middle. Weather and Flash's darkness are 2D overlays that would only cover the
 // middle, so those scenes stay 4:3, as do menus and other screens off the field map.
 //
-// Battles are wide too: libntr narrows their 3D (the Pokemon and move effects) itself and
-// draws the backdrop layer across the whole screen; the rest of their 2D stays 4:3.
+// Battles stay 4:3 (black bars at the sides): their backdrop is a 256-pixel picture and the
+// bases and HP boxes are placed for 256 pixels, so there's nothing real to show at the sides.
 
 #include <nitro/types.h>
 
 #include "field/field_system_decl.h"
 
-#include "bg_window.h"
 #include "camera.h"
 
 #ifdef __cplusplus
@@ -31,10 +30,6 @@ fx32 Widescreen_AspectRatio(const Camera *camera, fx32 aspectRatio);
 // The field map's 3D rendering is about to start: widens or narrows the field camera's
 // projection when libntr's wide state changed
 void Widescreen_BeforeFieldRender(FieldSystem *fieldSystem);
-
-// The battle backdrop's map was loaded (BG3): its bottom rows, only seen at the sides of a
-// wide screen, carry on the ground
-void Widescreen_ExtendBattleBackdrop(BgConfig *bgConfig);
 
 #ifdef __cplusplus
 }
