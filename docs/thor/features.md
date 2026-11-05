@@ -115,6 +115,12 @@ the bottom screen on the second display (not swapped):
 
 Menus and other screens stay 4:3.
 
+**3D as the DS draws it:** lit 3D models are shaded the way the DS lights them (towns
+at night look brighter and bluer than in earlier builds), and the overworld has the
+DS's dark outlines around 3D models and along the screen's edges. *Settings > Display >
+DS outlines* turns the outlines off; *Smooth 3D edges* (anti-aliasing) also leaves them
+out.
+
 ## GBA slot (Pal Park and dual-slot Pokemon)
 
 On a DS Lite, Platinum looks in the GBA slot. *Settings > GBA slot* puts a game there

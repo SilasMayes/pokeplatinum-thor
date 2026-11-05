@@ -22,8 +22,9 @@ next page.
   all the EXP and the rest of the party half), the hard level cap, the game clock (hours
   and days ahead of the device's), the Nuzlocke helper, 60 FPS options, drawing every DS
   frame.
-* **Display**: 3D sharpness and edge smoothing, second display, layout, swap screens,
-  widescreen (experimental), texture packs, vsync.
+* **Display**: 3D sharpness and edge smoothing, the DS's outlines around 3D models (see
+  [Features](features.md#screens)), second display, layout, swap screens, widescreen
+  (experimental), texture packs, vsync.
 * **GBA slot**: a Ruby, Sapphire, Emerald, FireRed or LeafGreen save in the DS's GBA
   slot (see [Features](features.md#gba-slot-pal-park-and-dual-slot-pokemon)).
 * **Link play**: host or join another device for trades and battles (see [Link play](link-play.md)).
