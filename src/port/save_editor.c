@@ -27,12 +27,14 @@
 #include "savedata/save_table.h"
 
 #include "bag.h"
+#include "charcode_convert.h"
 #include "field_task.h"
 #include "game_records.h"
 #include "heap.h"
 #include "item.h"
 #include "location.h"
 #include "map_header.h"
+#include "message.h"
 #include "move_table.h"
 #include "party.h"
 #include "pc_boxes.h"
@@ -265,6 +267,44 @@ static Pokemon *OpenEditable(SaveEdRef ref, MonAccess *access)
         return NULL;
     }
     return mon;
+}
+
+const char *SaveEd_SetNickname(SaveEdRef ref, const char *name)
+{
+    const char *unavailable = SaveEd_Unavailable();
+    if (unavailable != NULL) {
+        return unavailable;
+    }
+    MonAccess access;
+    Pokemon *mon = OpenMon(ref, &access);
+    if (mon == NULL) {
+        return "There's no Pokemon there.";
+    }
+    if (Pokemon_GetValue(mon, MON_DATA_IS_EGG, NULL)) {
+        CloseMon(&access, FALSE);
+        return "An egg can't be named until it hatches.";
+    }
+
+    // Leading and trailing spaces dropped; nothing left: the species' name again
+    while (*name == ' ') {
+        name++;
+    }
+    char trimmed[MON_NAME_LEN + 1];
+    snprintf(trimmed, sizeof(trimmed), "%s", name);
+    for (int i = (int)strlen(trimmed) - 1; i >= 0 && trimmed[i] == ' '; i--) {
+        trimmed[i] = '\0';
+    }
+
+    charcode_t chars[MON_NAME_LEN + 1];
+    if (trimmed[0] == '\0') {
+        MessageLoader_GetSpeciesName(Pokemon_GetValue(mon, MON_DATA_SPECIES, NULL), HEAP_ID_SYSTEM, chars);
+    } else {
+        CharCode_FromAscii(trimmed, chars, NELEMS(chars));
+    }
+    // Sets the "has a nickname" flag too: off when it's the species' name
+    Pokemon_SetValue(mon, MON_DATA_NICKNAME_AND_FLAG, chars);
+    CloseMon(&access, TRUE);
+    return NULL;
 }
 
 BOOL SaveEd_SetLevel(SaveEdRef ref, int level)

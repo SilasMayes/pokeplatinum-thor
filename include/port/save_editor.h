@@ -99,6 +99,9 @@ BOOL SaveEd_SetEV(SaveEdRef ref, enum SaveEdStat stat, int value); // the total 
 BOOL SaveEd_SetMove(SaveEdRef ref, int slot, u16 move);            // 0 removes it (not the last one)
 BOOL SaveEd_SetItem(SaveEdRef ref, u16 item);
 BOOL SaveEd_SetFriendship(SaveEdRef ref, int value);
+// Nickname in ASCII (charcode_convert's set), up to 10 letters; "" puts the species' name
+// back. NULL when done, else why not.
+const char *SaveEd_SetNickname(SaveEdRef ref, const char *name);
 BOOL SaveEd_Heal(SaveEdRef ref); // HP, status and PP
 
 // Moves the species learns by level and by TM/HM, sorted by name; returns the count
