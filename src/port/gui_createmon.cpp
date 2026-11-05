@@ -10,6 +10,7 @@
 #include "species.h"
 #include "gui_createmon_utils.h"
 
+#include <cstdlib>
 #include <string>
 #include <vector>
 
@@ -30,7 +31,7 @@ void CreateMonInit() {
     for(int i=1; i <= SPECIES_BAD_EGG; i++) {
         const char * pokemonName = GUI_CreateMon_GetSpeciesName(i);
         sSpeciesNames.push_back(std::string(pokemonName));
-        delete pokemonName;
+        free((void *)pokemonName); // allocated with malloc in GUI_CreateMon_GetSpeciesName
     }
 }
 
