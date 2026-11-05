@@ -123,7 +123,11 @@ pokeplatinum_args = [
 
 if(build_target != 'arm')
     pokeplatinum_args += [
-        '-std=c99'
+        '-std=c99',
+        # As in pokeheartgold: the decomp type-puns and relies on wrapping signed arithmetic
+        # (mwcc's behaviour), so the optimizer (-O2 on Android) must not assume otherwise.
+        '-fwrapv',
+        '-fno-strict-aliasing',
     ]
 endif
 
