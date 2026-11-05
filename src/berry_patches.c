@@ -38,6 +38,15 @@ void BerryPatches_Init(BerryPatch *patches, enum HeapID heapID, const u16 *initP
     for (int i = 0; i < MAX_BERRY_PATCHES || i < initSize; i++) {
         ZeroBerryPatch(&patches[i]);
 
+#ifdef SDK_PORT
+        // The loop runs to MAX_BERRY_PATCHES but the init table is shorter: the DS seeds the
+        // trailing patches from whatever data follows the table (and indexes the growth data with
+        // it). Only the patches the table covers are seeded here; the rest stay empty.
+        if (i >= initSize) {
+            continue;
+        }
+#endif
+
         patches[i].berryID = initPatches[i * 2] - FIRST_BERRY_IDX + 1;
         patches[i].growthStage = BERRY_GROWTH_STAGE_FRUIT;
         patches[i].stageMinutesRemaining = CalcMinutesRemainingInStage(growthData, patches[i].berryID, patches[i].mulchType) * 4;
