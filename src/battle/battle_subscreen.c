@@ -1051,7 +1051,25 @@ void BattleSubscreen_SetupBackground(NARC *unused, NARC *spriteNarc, BattleSubsc
     const BattleMenuConfig *newBattleMenuConfig, *activeBattleMenuConfig;
 
     if (battleDisplayData) {
+#ifdef SDK_PORT
+        // The callers pass the struct that fits the menu, which is smaller than the whole union
+        // (the DS reads past it); copy only the member the menu uses.
+        size_t menuDataSize = sizeof(ActiveMenuData);
+
+        if (menuConfigIndex >= 1 && menuConfigIndex <= 10) {
+            menuDataSize = sizeof(ActionSelectData);
+        } else if (menuConfigIndex == 11) {
+            menuDataSize = sizeof(MoveSelectData);
+        } else if (menuConfigIndex == 12) {
+            menuDataSize = sizeof(TargetSelectData);
+        } else if (menuConfigIndex >= 13 && menuConfigIndex <= 17) {
+            menuDataSize = sizeof(GiveUpMoveData);
+        }
+
+        MI_CpuCopy8(battleDisplayData, &btlSubscreen->activeMenuData, menuDataSize);
+#else
         MI_CpuCopy8(battleDisplayData, &btlSubscreen->activeMenuData, sizeof(ActiveMenuData));
+#endif
     }
 
     btlSubscreen->isPanelSliding = 0;

@@ -2786,6 +2786,28 @@ static void Task_SetTrainerEncounter(SysTask *task, void *data)
     }
 }
 
+#ifdef SDK_PORT
+// The ball offsets are indexed with the sprite's animation frame, which can pass the 6 frames of a
+// row. The DS reads on into the next row (row-major); the port does the same with a flat lookup,
+// and treats the end of the table as the end-of-list marker, so nothing is read out of bounds.
+static const s16 sTrainerThrowEnd[2] = { 0x7FFF, 0x7FFF };
+
+static const s16 *TrainerThrow_OffsetAt(const s16 *table, int rows, int row, int frame)
+{
+    int flat = row * 6 + frame;
+
+    if (row < 0 || frame < 0 || flat >= rows * 6) {
+        return sTrainerThrowEnd;
+    }
+
+    return &table[flat * 2];
+}
+
+#define TRAINER_THROW_OFFSET(row, frame, axis) (TrainerThrow_OffsetAt(&v5[0][0][0], (int)NELEMS(v5), (row), (frame))[(axis)])
+#else
+#define TRAINER_THROW_OFFSET(row, frame, axis) (v5[(row)][(frame)][(axis)])
+#endif
+
 static void Task_ThrowTrainerBall(SysTask *task, void *data)
 {
     TrainerThrowBallData *trainerThrowBallData = data;
@@ -2969,9 +2991,9 @@ static void Task_ThrowTrainerBall(SysTask *task, void *data)
         if (trainerThrowBallData->battlerData->ballRotation) {
             animFrame = ManagedSprite_GetAnimationFrame(trainerThrowBallData->battlerData->managedSprite);
 
-            if (v5[trainerThrowBallData->backSpriteIdx][animFrame][0] != 0x7FFF) {
+            if (TRAINER_THROW_OFFSET(trainerThrowBallData->backSpriteIdx, animFrame, 0) != 0x7FFF) {
                 ov12_02237E0C(trainerThrowBallData->battlerData->ballRotation, 1);
-                ov12_02237E18(trainerThrowBallData->battlerData->ballRotation, x + v5[trainerThrowBallData->backSpriteIdx][animFrame][0], y + v5[trainerThrowBallData->backSpriteIdx][animFrame][1]);
+                ov12_02237E18(trainerThrowBallData->battlerData->ballRotation, x + TRAINER_THROW_OFFSET(trainerThrowBallData->backSpriteIdx, animFrame, 0), y + TRAINER_THROW_OFFSET(trainerThrowBallData->backSpriteIdx, animFrame, 1));
 
                 if (animFrame == 3 && ov12_02237890(trainerThrowBallData->battlerData->ballRotation) != 0) {
                     ov12_0223786C(trainerThrowBallData->battlerData->ballRotation, 0);
@@ -2980,7 +3002,7 @@ static void Task_ThrowTrainerBall(SysTask *task, void *data)
                     if (battleType & BATTLE_TYPE_DOUBLES && (battleType & BATTLE_TYPE_2vs2) == 0) {
                         BattlerData *battlerData = BattleSystem_GetBattlerData(trainerThrowBallData->battleSys, BattleSystem_GetPartner(trainerThrowBallData->battleSys, trainerThrowBallData->battler));
 
-                        ov12_02237E18(battlerData->ballRotation, x + v5[trainerThrowBallData->backSpriteIdx][animFrame][0], y + v5[trainerThrowBallData->backSpriteIdx][animFrame][1]);
+                        ov12_02237E18(battlerData->ballRotation, x + TRAINER_THROW_OFFSET(trainerThrowBallData->backSpriteIdx, animFrame, 0), y + TRAINER_THROW_OFFSET(trainerThrowBallData->backSpriteIdx, animFrame, 1));
                         ov12_02237E0C(battlerData->ballRotation, 1);
                         ov12_0223786C(battlerData->ballRotation, 0);
                         ov12_02237E30(battlerData->ballRotation, 1);
@@ -3010,8 +3032,8 @@ static void Task_ThrowTrainerBall(SysTask *task, void *data)
             trainerThrowBallData->delay = 8;
             trainerThrowBallData->state = 4;
         } else if (trainerThrowBallData->battlerData->ballRotation != NULL) {
-            if (v5[trainerThrowBallData->backSpriteIdx][animFrame][0] != 0x7FFF) {
-                ov12_02237E18(trainerThrowBallData->battlerData->ballRotation, x + v5[trainerThrowBallData->backSpriteIdx][animFrame][0], y + v5[trainerThrowBallData->backSpriteIdx][animFrame][1]);
+            if (TRAINER_THROW_OFFSET(trainerThrowBallData->backSpriteIdx, animFrame, 0) != 0x7FFF) {
+                ov12_02237E18(trainerThrowBallData->battlerData->ballRotation, x + TRAINER_THROW_OFFSET(trainerThrowBallData->backSpriteIdx, animFrame, 0), y + TRAINER_THROW_OFFSET(trainerThrowBallData->backSpriteIdx, animFrame, 1));
 
                 if (animFrame == 3 && ov12_02237890(trainerThrowBallData->battlerData->ballRotation) != trainerThrowBallData->ballTargetState) {
                     ov12_0223786C(trainerThrowBallData->battlerData->ballRotation, trainerThrowBallData->ballTargetState);
