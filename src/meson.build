@@ -1027,6 +1027,7 @@ pokeplatinum_c += files(
     'port/widescreen.c',
     'port/gba_slot.c',
     'port/repel_prompt.c',
+    'port/follower.c',
     'port/gear_sprites.c',
     'port/gear_berries.c',
     'port/gear_daycare.c',

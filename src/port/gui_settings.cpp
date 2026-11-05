@@ -493,6 +493,10 @@ void DrawGameplay()
         &config->instantText);
     ConfigToggle("Instant HP and EXP bars", "Battle bars jump to their new value instead of sliding there.",
         &config->instantBars);
+    Section("Following Pokemon");
+    ConfigToggle("Following Pokemon", "As in HeartGold and SoulSilver: your first Pokemon that can battle walks "
+        "behind you. It goes back in its ball on a bike, surfing and with a partner. Talk to it to hear its cry. "
+        "Species without an overworld sprite in Platinum walk as their party icon.", &config->followerPokemon);
     Section("Field moves");
     ConfigToggle("Field moves without HMs", "With the HM in your bag (and its badge), Cut, Fly, Surf, Strength, "
         "Rock Smash, Waterfall, Rock Climb and Defog work without teaching the move: a Pokemon that could learn "

@@ -1,5 +1,6 @@
 // See include/port/gear_sprites.h
 #include "port/gear_sprites.h"
+#include "port/follower.h"
 
 #include <nitro.h>
 #include <stdlib.h>
@@ -149,6 +150,45 @@ BOOL GearSprites_Icon(u16 species, u8 form, BOOL isEgg, u32 *rgba)
         && ReadPalette(palFile, palSize, PokeIconPaletteIndex(species, form, isEgg) * 16, 16, palette)) {
         ToRGBA(chars.pixels, chars.bitmap, GEAR_ICON_WIDTH, GEAR_ICON_WIDTH, GEAR_ICON_HEIGHT, palette, rgba);
         ok = TRUE;
+    }
+    free(charFile);
+    free(palFile);
+    return ok;
+}
+
+BOOL GearSprites_IconIndexed(u16 species, u8 form, BOOL isEgg, u8 *pixels, u16 *palette)
+{
+    if (species == SPECIES_NONE || species > MAX_SPECIES) {
+        return FALSE;
+    }
+
+    u32 charSize = 0;
+    u8 *charFile = NARC_PortReadMember(NARC_INDEX_POKETOOL__ICONGRA__PL_POKE_ICON,
+        (int)PokeIconSpriteIndex(species, isEgg, form), &charSize);
+    u32 palSize = 0;
+    u8 *palFile = NARC_PortReadMember(NARC_INDEX_POKETOOL__ICONGRA__PL_POKE_ICON, (int)PokeIconPalettesFileIndex(),
+        &palSize);
+
+    BOOL ok = FALSE;
+    CharacterFile chars;
+    u32 blockSize = 0;
+    u8 *palBlock = palFile != NULL ? FindBlock(palFile, palSize, "TTLP", &blockSize) : NULL;
+    if (charFile != NULL && palBlock != NULL && blockSize >= 16 && ReadCharacters(charFile, charSize, &chars)
+        && chars.size >= GEAR_ICON_WIDTH * GEAR_ICON_HEIGHT / 2) {
+        const u32 colorsSize = Read32(palBlock + 8);
+        const u32 colorsOffset = Read32(palBlock + 12);
+        const int first = PokeIconPaletteIndex(species, form, isEgg) * 16;
+        if (colorsOffset + colorsSize <= blockSize && (u32)(first + 16) * 2 <= colorsSize) {
+            for (int i = 0; i < 16; i++) {
+                palette[i] = Read16(palBlock + colorsOffset + (first + i) * 2);
+            }
+            for (int y = 0; y < GEAR_ICON_HEIGHT; y++) {
+                for (int x = 0; x < GEAR_ICON_WIDTH; x++) {
+                    pixels[y * GEAR_ICON_WIDTH + x] = Pixel(chars.pixels, chars.bitmap, GEAR_ICON_WIDTH, x, y);
+                }
+            }
+            ok = TRUE;
+        }
     }
     free(charFile);
     free(palFile);

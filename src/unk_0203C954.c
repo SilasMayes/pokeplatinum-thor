@@ -1,5 +1,9 @@
 #include "unk_0203C954.h"
 
+#ifdef SDK_PORT
+#include "port/follower.h"
+#endif
+
 #include <nitro.h>
 #include <string.h>
 
@@ -88,6 +92,15 @@ void sub_0203C9D4(FieldSystem *fieldSystem, MapObject **param1)
 u8 sub_0203CA40(FieldSystem *fieldSystem, MapObject **param1)
 {
     sub_0203C9D4(fieldSystem, param1);
+
+#ifdef SDK_PORT
+    // The following Pokemon (port/follower.h): no script of its own
+    if (*param1 != NULL && Follower_IsFollower(*param1)) {
+        Follower_Talk(fieldSystem, *param1);
+        *param1 = NULL;
+        return 0;
+    }
+#endif
 
     if (*param1 != NULL) {
         if ((sub_02062D9C(*param1) == 1) && (sub_0203C9B0(fieldSystem->playerAvatar, *param1) == 1)) {

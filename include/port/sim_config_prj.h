@@ -20,6 +20,7 @@ typedef struct {
     BOOL hardLevelCap; // no battle EXP past the level cap (Gear_LevelCap)
     BOOL repelPrompt;  // "Use another Repel?" (port/repel_prompt.h)
     BOOL expShareAll;  // the whole party gets EXP, Gen 6 style (port/cheats.h)
+    BOOL followerPokemon; // the party's first Pokemon walks behind the player (port/follower.h)
     int clockOffsetMinutes; // the game's clock runs this far ahead of the device's (SIM_SetClockOffset)
     BOOL nuzlocke;          // Nuzlocke helper (port/nuzlocke.h)
     BOOL nuzlockeDupes;     // dupes clause

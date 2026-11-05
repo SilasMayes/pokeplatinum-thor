@@ -14,6 +14,10 @@
 #include "map_object.h"
 #include "narc.h"
 
+#ifdef SDK_PORT
+#include "port/follower.h"
+#endif
+
 static void ov5_021ECCA4(MapObjectManager *param0);
 static void ov5_021ECCBC(MapObjectManager *param0);
 static const ObjectEventGfxRenderDetailsEntry *ov5_021ECD10(int param0);
@@ -118,6 +122,13 @@ void *ov5_021ECD68(const MapObjectManager *param0, u32 param1, int param2)
 {
     void *v0;
     NARC *v1 = MapObjectMan_GetNARC(param0);
+#ifdef SDK_PORT
+    // The following Pokemon's icon sprites (port/follower.h)
+    v0 = Follower_TextureFile(v1, param1, param2);
+    if (v0 != NULL) {
+        return v0;
+    }
+#endif
     u32 v2 = NARC_GetMemberSize(v1, param1);
 
     if (param2 == 1) {

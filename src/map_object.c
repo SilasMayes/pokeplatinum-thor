@@ -1,5 +1,9 @@
 #include "map_object.h"
 
+#ifdef SDK_PORT
+#include "port/follower.h"
+#endif
+
 #include <nitro.h>
 #include <string.h>
 
@@ -427,6 +431,12 @@ void MapObjectMan_SaveAll(FieldSystem *fieldSystem, const MapObjectManager *mapO
     MapObject *mapObj;
 
     while (MapObjectMan_FindObjectWithStatus(mapObjMan, &mapObj, &v0, MAP_OBJ_STATUS_0)) {
+#ifdef SDK_PORT
+        // The following Pokemon is the port's: the save stays as the DS's (port/follower.h)
+        if (Follower_IsFollower(mapObj)) {
+            continue;
+        }
+#endif
         MapObject_Save(fieldSystem, mapObj, mapObjSave);
         mapObjSave++;
         param3--;
@@ -668,7 +678,11 @@ static void MapObjectMan_AddMoveTask(const MapObjectManager *mapObjMan, MapObjec
     SysTask *task;
 
     if (movementType == MOVEMENT_TYPE_FOLLOW_PLAYER
-        || movementType == MOVEMENT_TYPE_FOLLOW_PARTNER_TRAINER) {
+        || movementType == MOVEMENT_TYPE_FOLLOW_PARTNER_TRAINER
+#ifdef SDK_PORT
+        || movementType == MOVEMENT_TYPE_PORT_FOLLOWER
+#endif
+    ) {
         v0 += 2;
     }
 
@@ -2338,6 +2352,12 @@ static int ObjectEvent_GetHiddenFlagNoScript(const ObjectEvent *objectEvent)
 
 static const UnkStruct_020EDF0C *sub_0206320C(u32 param0)
 {
+#ifdef SDK_PORT
+    // The following Pokemon (port/follower.h) moves like a partner trainer
+    if (param0 == MOVEMENT_TYPE_PORT_FOLLOWER) {
+        return Unk_020EE3A8[MOVEMENT_TYPE_FOLLOW_PLAYER];
+    }
+#endif
     GF_ASSERT(param0 < 0x44);
     return Unk_020EE3A8[param0];
 }

@@ -42,6 +42,9 @@ static int IniHandler(void* user, const char* section, const char* name,
     if(MATCH("General", "HmFreeFieldMoves")) {
         config->hmFree = StringToBool(value);
     }
+    if(MATCH("General", "FollowerPokemon")) {
+        config->followerPokemon = StringToBool(value);
+    }
     if(MATCH("General", "RepelPrompt")) {
         config->repelPrompt = StringToBool(value);
     }
@@ -177,6 +180,7 @@ void SIM_Config_prj_LoadDefaults(SIM_Config_prj_type * aConfig)
   aConfig->hmFree = TRUE;
   aConfig->hardLevelCap = FALSE;
   aConfig->repelPrompt = TRUE;
+  aConfig->followerPokemon = TRUE;
   aConfig->expShareAll = FALSE;
   aConfig->clockOffsetMinutes = 0;
   aConfig->nuzlocke = FALSE;
@@ -237,6 +241,7 @@ void SIM_Config_prj_SaveConfigFile(SIM_Config_prj_type * aConfig)
     fprintf(configFile, "HmFreeFieldMoves=%s\n", BoolToString(aConfig->hmFree));
     fprintf(configFile, "HardLevelCap=%s\n", BoolToString(aConfig->hardLevelCap));
     fprintf(configFile, "RepelPrompt=%s\n", BoolToString(aConfig->repelPrompt));
+    fprintf(configFile, "FollowerPokemon=%s\n", BoolToString(aConfig->followerPokemon));
     fprintf(configFile, "ExpShareAll=%s\n", BoolToString(aConfig->expShareAll));
     fprintf(configFile, "ClockOffsetMinutes=%d\n", aConfig->clockOffsetMinutes);
     fprintf(configFile, "EnableAsserts=%s\n", BoolToString(aConfig->enableAsserts));

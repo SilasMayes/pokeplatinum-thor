@@ -1,5 +1,6 @@
 // 60 FPS scope; see include/port/frame_rate.h
 #include "port/frame_rate.h"
+#include "port/follower.h"
 
 #include "comm_manager.h"
 
@@ -38,6 +39,7 @@ void FrameRate_Update(void)
 {
     const SIM_Config_prj_type *config = SIM_Config_prj_GetConfig();
     Widescreen_Update();
+    Follower_Update();
 
     if (config == NULL || !config->enable60fps) {
         s60Hz = FALSE;
