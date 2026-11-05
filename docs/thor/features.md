@@ -88,6 +88,21 @@ used. The game is named with its seed ("Pokemon Platinum (randomized 12345)") an
 and legendary encounters set by events, the Great Marsh's daily Pokemon, Honey trees and
 Trophy Garden aren't randomized.
 
+## Following Pokemon
+
+*Settings > Gameplay > Following Pokemon* (on by default): as in HeartGold and
+SoulSilver, your first Pokemon that can battle walks behind you on the overworld, into
+buildings and caves, and back out. It comes back where it was after a battle or a menu,
+and after a warp it steps out behind you. It goes back into its ball on a bike, surfing,
+while a partner (Cheryl, Riley...) walks with you, in the Distortion World, the Battle
+Tower and while linked up. Talk to it and it turns to you and calls out.
+
+Platinum has overworld sprites for some Pokemon (the starters and their evolutions,
+Pikachu, Clefairy, Jigglypuff, Psyduck, Machop, Torchic, Shroomish, Skitty, Pachirisu,
+Drifloon, Buneary, Happiny, Croagunk, the lake trio, Cresselia, Darkrai, Shaymin and
+Rotom's forms); those walk as themselves. Every other species walks as its party icon.
+The follower is never written to the save, so saves stay as the DS's.
+
 ## Screens
 
 * **Dual-screen devices (AYN Thor):** top screen on the main panel, bottom screen on
@@ -99,9 +114,17 @@ Trophy Garden aren't randomized.
 Turn the second display off with *Settings > Display > Bottom screen on the second
 display*. *Swap screens* swaps which screen goes on which panel.
 
+* **Windows and Linux:** *Settings > Display > Bottom screen in its own window* puts the
+  bottom screen (with the Gear) in a window of its own; drag it to another monitor and
+  it opens there next time (the top window remembers its place too). The top window
+  turns 4:3 then, since it shows one screen. *Top screen full screen* and *Bottom
+  screen full screen* fill the monitor each window is on; **F11** or **Alt+Enter**
+  switches the window you're in. If the top screen goes full screen with the bottom
+  window on the same monitor and there's another monitor, the bottom window moves there.
+
 **Widescreen (experimental, off by default):** *Settings > Display > Widescreen* fills
-the Thor's 16:9 top panel instead of a 4:3 box, on the overworld and in battles, with
-the bottom screen on the second display (not swapped):
+the Thor's 16:9 top panel instead of a 4:3 box on the overworld, with the bottom screen
+on the second display (not swapped):
 
 * **Overworld**: the field camera sees more of the map on the left and right,
   unstretched. Text boxes, menus and the location banner stay 4:3 in the middle. The
@@ -109,9 +132,9 @@ the bottom screen on the second display (not swapped):
   unloaded ground at the edges. Rain, snow, sand, fog and dark caves stay 4:3: their
   weather and darkness are 2D overlays that would only cover the middle. The Poke Radar
   keeps its patches while they are anywhere on the wider screen.
-* **Battles**: the backdrop goes on across the whole screen, and the Pokemon, trainers
-  and move effects keep their places and shapes (with more room around them when they
-  slide in). The text box, HP boxes and the bases stay in the middle.
+* **Battles** stay 4:3 with black bars at the sides: the battle backdrop is a
+  256-pixel picture and the bases and HP boxes are placed for 256 pixels, so there's
+  nothing real to show beside them.
 
 Menus and other screens stay 4:3.
 

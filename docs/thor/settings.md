@@ -21,10 +21,16 @@ next page.
   for the whole party* (off by default: as in X and Y, the Pokemon that battled each get
   all the EXP and the rest of the party half), the hard level cap, the game clock (hours
   and days ahead of the device's), the Nuzlocke helper, 60 FPS options, drawing every DS
-  frame.
+  frame, *Following Pokemon* (see [Features](features.md#following-pokemon)).
 * **Display**: 3D sharpness and edge smoothing, the DS's outlines around 3D models (see
   [Features](features.md#screens)), second display, layout, swap screens, widescreen
-  (experimental), texture packs, vsync.
+  (experimental), texture packs, vsync. On Windows and Linux: *Bottom screen
+  in its own window* gives the bottom screen (and the Gear) a window you can drag to
+  another monitor (both windows open where you left them), and *Top screen full screen*
+  / *Bottom screen full screen* fill the monitor each window is on. **F11** or
+  **Alt+Enter** switches full screen for the window you're in. When the top screen goes
+  full screen with the bottom window on the same monitor and you have a second one, the
+  bottom window moves over to it.
 * **GBA slot**: a Ruby, Sapphire, Emerald, FireRed or LeafGreen save in the DS's GBA
   slot (see [Features](features.md#gba-slot-pal-park-and-dual-slot-pokemon)).
 * **Link play**: host or join another device for trades and battles (see [Link play](link-play.md)).

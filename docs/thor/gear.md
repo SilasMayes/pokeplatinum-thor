@@ -19,8 +19,13 @@ Pokegear and Kanto Gear:
   and Run (Ball / Bait / Mud in the Safari Zone), your moves with their PP and how well
   each hits the opponents (`x2 Super effective`, `L x1/2 R x2` in double battles), the
   targets in double battles, and the yes/no questions (forget a move, switch Pokemon,
-  ...). The D-pad cursor shows on the Gear too. The DS screen comes back by itself for
-  the bag and the party, and goes away again after. Above the menu: the opponents'
+  ...). The D-pad cursor shows on the Gear too. **Switching Pokemon** happens on the
+  Gear as well: Pokemon (or the switch after a faint, or *Will you switch?*) shows your
+  party as cards, with a note on the ones that can't come in (fainted, already in
+  battle, an egg); tap one for its moves against what's out now and *Switch in*.
+  *Summary* and *Moves* open the game's own pages on the DS screen. The DS screen comes
+  back by itself for the bag, using an item on a Pokemon, and learning a move, and goes
+  away again after. Above the menu: the opponents'
   types, HP and status, and your Pokemon; further down: stat changes, abilities and
   items. Turn this off with *Settings > Gear > Battle menu on the Gear* (the Gear then
   shows the information only, beside the DS screen).
@@ -43,6 +48,10 @@ Pokegear and Kanto Gear:
 * **Party**: each Pokemon's icon (hopping like in the party menu, slower when it's
   hurt), HP, status and level at a glance; tap a Pokemon for its portrait (its battle
   sprite, shiny colors included), moves, stats, ability, nature and item.
+  **Rename** on that page gives it a nickname with an on-screen keyboard (the letters
+  and marks the game's naming screen has, up to 10); *Species name* takes the nickname
+  away. It works while you're walking around (not in a battle or the game's menus);
+  save in the game to keep it.
   Below the party, the **eggs** you carry with about how many steps each still needs
   (Flame Body and Magma Armor counted), and the **Day Care**: its two Pokemon with the
   levels they've gained, how well they get along (as the Day Care Man says it) with the
