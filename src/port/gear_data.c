@@ -32,12 +32,15 @@
 #include "battle/battle_mon.h"
 #include "battle/battle_subscreen.h"
 #include "battle/battle_system.h"
+#include "battle_sub_menus/battle_party.h"
 #include "field/field_system.h"
 #include "overlay006/wild_encounters.h"
 #include "port/debug_field.h"
 #include "port/gba_slot.h"
 #include "port/gear_map.h"
 #include "port/rom_patches.h"
+#include "port/save_editor.h"
+#include "port/sim_config_prj.h"
 
 #include "charcode_convert.h"
 #include "location.h"
@@ -849,16 +852,69 @@ void Gear_MoveInfo(u16 move, GearMove *out)
     FillMove(out, move, 0, 0);
 }
 
+static BOOL GearHasBattleControls(void)
+{
+    const SIM_Config_prj_type *config = SIM_Config_prj_GetConfig();
+    return config->gearEnabled && config->gearBattleControls;
+}
+
+BOOL Gear_BattlePartyOnGear(int listMode)
+{
+    if (!GearHasBattleControls()
+        || (listMode != BATTLE_PARTY_MODE_SELECT_POKEMON && listMode != BATTLE_PARTY_MODE_SELECT_POKEMON_NO_CANCEL)) {
+        return FALSE;
+    }
+    BattlePartyPortMenu menu;
+    // Before the screen starts and after it closes there's no party screen yet: the fades
+    if (!BattleParty_PortGetMenu(&menu)) {
+        return TRUE;
+    }
+    return menu.gearCanShow;
+}
+
+// The menu kind the last Gear_GetBattleMenu reported, for Gear_PressBattleButton
+static int sReportedMenuKind = GEAR_MENU_NONE;
+
+static BOOL GetPartyMenu(GearBattleMenu *out)
+{
+    BattlePartyPortMenu menu;
+    if (!GearHasBattleControls() || !BattleParty_PortGetMenu(&menu) || !menu.polled || menu.screen < 0
+        || (menu.mode != BATTLE_PARTY_MODE_SELECT_POKEMON && menu.mode != BATTLE_PARTY_MODE_SELECT_POKEMON_NO_CANCEL)) {
+        return FALSE;
+    }
+    out->kind = menu.screen == BATTLE_PARTY_SCREEN_SELECT_POKEMON ? GEAR_MENU_PARTY_MON : GEAR_MENU_PARTY;
+    out->ready = menu.ready;
+    out->cancel = menu.canCancel;
+    out->partyCount = menu.count;
+    out->partySelected = menu.selected;
+    for (int i = 0; i < menu.count && i < GEAR_PARTY_MAX; i++) {
+        if (menu.mons[i] != NULL) {
+            FillMon(menu.mons[i], &out->party[i]);
+        }
+        out->partyBlocked[i] = menu.blocked[i];
+    }
+    if (out->kind == GEAR_MENU_PARTY_MON && (out->partySelected < 0 || out->partySelected >= out->partyCount)) {
+        return FALSE;
+    }
+    return TRUE;
+}
+
 BOOL Gear_GetBattleMenu(GearBattleMenu *out)
 {
     memset(out, 0, sizeof(*out));
     out->cursor = -1;
     out->battler = -1;
+    out->partySelected = -1;
     for (int i = 0; i < 4; i++) {
         out->targetBattler[i] = -1;
     }
+    sReportedMenuKind = GEAR_MENU_NONE;
     if (sBattleSys == NULL) {
         return FALSE;
+    }
+    if (GetPartyMenu(out)) {
+        sReportedMenuKind = out->kind;
+        return TRUE;
     }
 
     BattleSubscreenPortMenu menu;
@@ -949,12 +1005,23 @@ BOOL Gear_GetBattleMenu(GearBattleMenu *out)
 
     out->ready = menu.ready;
     out->cursor = menu.cursorButton;
+    sReportedMenuKind = out->kind;
     return TRUE;
 }
 
 void Gear_PressBattleButton(int button)
 {
-    BattleSubscreen_PortPress(button);
+    if (sReportedMenuKind == GEAR_MENU_PARTY || sReportedMenuKind == GEAR_MENU_PARTY_MON) {
+        BattleParty_PortPress(button);
+    } else {
+        BattleSubscreen_PortPress(button);
+    }
+}
+
+const char *Gear_RenamePartyMon(int index, const char *name)
+{
+    SaveEdRef ref = { SAVE_ED_PARTY, index };
+    return SaveEd_SetNickname(ref, name);
 }
 
 BOOL Gear_GetBattle(GearBattle *out)

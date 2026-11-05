@@ -261,4 +261,35 @@ BOOL BattlePartyTask_CheckIfPartnerBattle(BattleParty *battleParty);
 BOOL BattlePartyTask_CheckIf2V2Battle(BattleParty *battleParty);
 BOOL BattlePartyTask_CheckIfSwitchingWithPartnersPokemon(BattleParty *battleParty, u8 partySlot);
 
+#ifdef SDK_PORT
+// What the Gear needs to show the party list and the picked Pokemon's buttons
+enum BattlePartyPortBlocked {
+    BATTLE_PARTY_PORT_OK = 0,
+    BATTLE_PARTY_PORT_FAINTED,
+    BATTLE_PARTY_PORT_IN_BATTLE,
+    BATTLE_PARTY_PORT_EGG,
+    BATTLE_PARTY_PORT_CHOSEN,   // the other Pokemon of a double already switches to it
+    BATTLE_PARTY_PORT_PARTNERS, // the partner trainer's (multi battles)
+    BATTLE_PARTY_PORT_LEARNING, // a move is being learned
+};
+
+typedef struct BattlePartyPortMenu {
+    BOOL polled;  // the screen read its input in the last few frames
+    BOOL ready;   // and is on a screen the Gear can press (screen >= 0), not fading
+    int screen;   // BATTLE_PARTY_SCREEN_POKEMON_PARTY or _SELECT_POKEMON, -1 for others
+    BOOL gearCanShow; // on those screens or between them (not a message, summary, moves)
+    int mode;     // enum BattlePartyMode
+    int selected; // the picked Pokemon (list order), -1
+    BOOL canCancel;
+    int count;
+    Pokemon *mons[MAX_PARTY_SIZE]; // in the list's order (NULL: empty)
+    u8 blocked[MAX_PARTY_SIZE];    // enum BattlePartyPortBlocked
+} BattlePartyPortMenu;
+
+BOOL BattleParty_PortGetMenu(BattlePartyPortMenu *out);
+// As a touch on the current screen: enum BattlePokemonPartyScreenButton (party list) or
+// enum BattleSelectPokemonScreenButton (picked Pokemon)
+void BattleParty_PortPress(int button);
+#endif
+
 #endif // POKEPLATINUM_BATTLE_PARTY_H

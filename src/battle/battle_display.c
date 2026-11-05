@@ -4444,11 +4444,14 @@ static void Task_RecordingShowBagMenu(SysTask *task, void *data)
 
 static void Task_PlayerShowPartyMenu(SysTask *task, void *data)
 {
-#ifdef SDK_PORT
-    // The bag, party and move screens are on the DS screen: the Gear makes room for it
-    Gear_NoteBattleDsScreen();
-#endif
     PartyMenuData *partyMenuData = data;
+#ifdef SDK_PORT
+    // The party list to switch Pokemon is on the Gear too; for items, learning moves, the
+    // summary and messages the Gear makes room for the DS screen
+    if (!Gear_BattlePartyOnGear(partyMenuData->listMode)) {
+        Gear_NoteBattleDsScreen();
+    }
+#endif
     PaletteData *paletteData = BattleSystem_GetPaletteData(partyMenuData->battleSys);
 
     switch (partyMenuData->state) {

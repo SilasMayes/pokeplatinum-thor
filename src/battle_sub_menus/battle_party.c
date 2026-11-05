@@ -227,6 +227,108 @@ static const TouchScreenRect sRestoreMovePPScreenTouchRects[] = {
     { TOUCHSCREEN_TABLE_TERMINATOR, 0, 0, 0 }
 };
 
+#ifdef SDK_PORT
+// The Gear's view of this screen (BattleParty_PortGetMenu): the party list and the picked
+// Pokemon's Shift/Summary/Moves/Cancel buttons can be pressed from the Gear like touches
+static BattleParty *sPortParty = NULL;
+static u32 sPortPartyPollTick = 0;
+static int sPortPartyPress = -1;
+static const TouchScreenRect *sPortPartyPressRects = NULL;
+
+static const TouchScreenRect *PortScreenRects(const BattleParty *battleParty)
+{
+    switch (battleParty->currentState) {
+    case TASK_STATE_PARTY_POKEMON_SCREEN:
+        return sPartyPokemonScreenTouchRects;
+    case TASK_STATE_SELECT_POKEMON_SCREEN:
+        return sSelectPokemonScreenTouchRects;
+    default:
+        return NULL;
+    }
+}
+
+BOOL BattleParty_PortGetMenu(BattlePartyPortMenu *out)
+{
+    MI_CpuClear8(out, sizeof(*out));
+    BattleParty *battleParty = sPortParty;
+    if (battleParty == NULL) {
+        return FALSE;
+    }
+    const BattlePartyContext *context = battleParty->context;
+    out->mode = context->battlePartyMode;
+    out->polled = gSystem.vblankCounter - sPortPartyPollTick <= 4;
+    switch (battleParty->currentState) {
+    case TASK_STATE_PARTY_POKEMON_SCREEN:
+        out->screen = BATTLE_PARTY_SCREEN_POKEMON_PARTY;
+        break;
+    case TASK_STATE_SELECT_POKEMON_SCREEN:
+        out->screen = BATTLE_PARTY_SCREEN_SELECT_POKEMON;
+        break;
+    default:
+        out->screen = -1; // a transition, a message, or a screen only the DS shows
+        break;
+    }
+    out->ready = out->polled && out->screen >= 0 && PaletteData_GetSelectedBuffersMask(battleParty->palette) == 0;
+    // Between those two screens (or on the way in and out) the Gear keeps showing them;
+    // messages, the summary and the move screens need the DS screen
+    switch (battleParty->currentState) {
+    case TASK_STATE_INITIALIZE:
+    case TASK_STATE_PARTY_POKEMON_SCREEN:
+    case TASK_STATE_SELECT_POKEMON_SCREEN:
+    case TASK_STATE_SETUP_PARTY_POKEMON_SCREEN:
+    case TASK_STATE_SETUP_SELECT_POKEMON_SCREEN:
+    case TASK_STATE_EXIT:
+    case TASK_STATE_FINISH_TASK:
+        out->gearCanShow = TRUE;
+        break;
+    case TASK_STATE_SCREEN_TRANSITION:
+        out->gearCanShow = battleParty->queuedState == TASK_STATE_SETUP_PARTY_POKEMON_SCREEN
+            || battleParty->queuedState == TASK_STATE_SETUP_SELECT_POKEMON_SCREEN
+            || battleParty->queuedState == TASK_STATE_EXIT;
+        break;
+    default:
+        out->gearCanShow = FALSE;
+        break;
+    }
+    out->selected = context->selectedPartyIndex < MAX_PARTY_SIZE ? context->selectedPartyIndex : -1;
+    out->canCancel = context->battlePartyMode != BATTLE_PARTY_MODE_SELECT_POKEMON_NO_CANCEL;
+
+    for (int i = 0; i < MAX_PARTY_SIZE; i++) {
+        const BattlePartyPokemon *pokemon = &battleParty->partyPokemon[i];
+        if (pokemon->species == SPECIES_NONE) {
+            continue;
+        }
+        out->mons[i] = pokemon->mon;
+        out->count = i + 1;
+        // Why the Shift button would refuse it (CheckCanSwitchPokemon's order)
+        u8 partySlot = context->pokemonPartySlots[i];
+        if (BattlePartyTask_CheckIfSwitchingWithPartnersPokemon(battleParty, i) == TRUE) {
+            out->blocked[i] = BATTLE_PARTY_PORT_PARTNERS;
+        } else if (pokemon->isEgg) {
+            out->blocked[i] = BATTLE_PARTY_PORT_EGG;
+        } else if (pokemon->curHP == 0) {
+            out->blocked[i] = BATTLE_PARTY_PORT_FAINTED;
+        } else if (partySlot == context->playerPokemonPartySlot || partySlot == context->partnerPokemonPartySlot) {
+            out->blocked[i] = BATTLE_PARTY_PORT_IN_BATTLE;
+        } else if (context->doubleBattleFirstSelectedPartySlot != NO_SELECTION_PARTY_SLOT && partySlot == context->doubleBattleFirstSelectedPartySlot) {
+            out->blocked[i] = BATTLE_PARTY_PORT_CHOSEN;
+        } else if (context->moveToLearn != MOVE_NONE) {
+            out->blocked[i] = BATTLE_PARTY_PORT_LEARNING;
+        }
+    }
+    return TRUE;
+}
+
+void BattleParty_PortPress(int button)
+{
+    if (sPortParty == NULL) {
+        return;
+    }
+    sPortPartyPressRects = PortScreenRects(sPortParty);
+    sPortPartyPress = sPortPartyPressRects != NULL ? button : -1;
+}
+#endif
+
 void BattlePartyTask_Start(BattlePartyContext *context)
 {
     BattleParty *battleParty;
@@ -245,6 +347,10 @@ void BattlePartyTask_Start(BattlePartyContext *context)
     battleParty->partySlotLearningMove = context->selectedPartyIndex;
     battleParty->hasVisitedContestHall = BattleSystem_GetVisitedContestHall(context->battleSys);
     battleParty->battlerSlot = BattleSystem_GetBattlerType(context->battleSys, context->battler);
+#ifdef SDK_PORT
+    sPortParty = battleParty;
+    sPortPartyPress = -1;
+#endif
 }
 
 static void BattlePartyTask_Tick(SysTask *task, void *taskParam)
@@ -1043,6 +1149,12 @@ static u8 BattlePartyTask_Exit(BattleParty *battleParty)
 
 static BOOL BattlePartyTask_FinishTask(SysTask *task, BattleParty *battleParty)
 {
+#ifdef SDK_PORT
+    if (sPortParty == battleParty) {
+        sPortParty = NULL;
+        sPortPartyPress = -1;
+    }
+#endif
     if (PaletteData_GetSelectedBuffersMask(battleParty->palette) != 0) {
         return FALSE;
     }
@@ -1403,7 +1515,21 @@ static enum BattleMoveSummaryScreenButton CheckMoveSummaryScreenButtonsPressed(B
 
 static int CheckTouchRectIsPressed(BattleParty *battleParty, const TouchScreenRect *rect)
 {
+#ifdef SDK_PORT
+    sPortParty = battleParty;
+    sPortPartyPollTick = gSystem.vblankCounter;
+    int pressed = TouchScreen_CheckRectanglePressed(rect);
+    // A button pressed on the Gear counts as a touch on the screen it was meant for
+    if (pressed == TOUCHSCREEN_INPUT_NONE && sPortPartyPress >= 0) {
+        if (rect == sPortPartyPressRects && rect == PortScreenRects(battleParty)) {
+            pressed = sPortPartyPress;
+        }
+        sPortPartyPress = -1;
+    }
+    return pressed;
+#else
     return TouchScreen_CheckRectanglePressed(rect);
+#endif
 }
 
 u8 BattlePartyTask_CheckCanPartySlotBeSelected(BattleParty *battleParty, s32 partySlot)
