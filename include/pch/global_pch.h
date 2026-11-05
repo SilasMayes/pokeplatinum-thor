@@ -26,6 +26,8 @@ typedef unsigned short wchar_t;
 
 #define ALIGN_4 __attribute__((aligned(4)))
 
+#include "port_align.h"
+
 #ifdef SDK_BUILD_ARM
 #define ALIGN_PTR(ptr, alignment) ((void *)(((u32)(ptr) + (alignment - 1)) / (alignment) * (alignment)))
 #else

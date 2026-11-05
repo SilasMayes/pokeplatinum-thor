@@ -11,6 +11,12 @@ Save slots, import/export, autosave, and keeping saves in step between devices.
 * **Import / export:** *Settings > Saves*. Import takes a
   `.sav` (or DeSmuME `.dsv`) from anywhere through the file picker; the slot's previous
   save is kept as `.bak`. Export writes a 512 KB `.sav` an emulator can load.
+* **Saves from older builds:** builds before November 2026 laid a few parts of the save
+  out differently from the DS (the game clock, the Day Care, the PC boxes and battle
+  videos), so their saves didn't load in an emulator or PKHeX, and a cartridge or
+  emulator save didn't load here. Such a save is converted to the DS's layout the first
+  time it's loaded, with nothing lost. Older builds can't read it after that, so update
+  every device that shares a save (save sync) together.
 * **Autosave:** the game's own save, run automatically every few minutes (default 5)
   and when the app is closed or sent to the background, but only when the start
   menu's SAVE would be allowed, the player is standing still on the overworld with

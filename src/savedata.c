@@ -2,6 +2,9 @@
 
 #include <nitro.h>
 #include <string.h>
+#ifdef SDK_PORT
+#include <stdlib.h>
+#endif
 
 #include "constants/heap.h"
 
@@ -16,6 +19,7 @@
 #include "unk_0209AA74.h"
 
 #ifdef SDK_PORT
+#include "port/save_migrate_v1.h"
 #include "port/save_slots.h"
 #include "port/save_sync.h"
 #endif
@@ -83,6 +87,11 @@ SaveData *SaveData_Init(void)
 
     MI_CpuClearFast(saveData->blockCounters, sizeof(saveData->blockCounters));
 
+#ifdef SDK_PORT
+    // A save from a port build before the DS layout: rewritten in it first
+    PortSave_MigrateV1();
+#endif
+
     int loadResult = SaveData_LoadCheck(saveData);
 
     saveData->loadCheckStatus = 0;
@@ -145,6 +154,23 @@ BOOL SaveData_IsValidBackupImage(const void *image, u32 size)
     for (int i = 0; i < 2 && !valid; i++) {
         memcpy(copy, (const u8 *)image + starts[i] * SAVE_SECTOR_SIZE, SAVE_SECTOR_SIZE * SAVE_PAGE_MAX);
         valid = SaveBlockFooter_Validate(sSaveDataPtr, (u64)copy, SAVE_BLOCK_ID_NORMAL);
+    }
+
+    // A save from a port build before the DS layout counts too (it is converted when loaded)
+    if (!valid) {
+        u32 imageSize = (BACKUP_SECTOR_START + SAVE_PAGE_MAX * 2) * SAVE_SECTOR_SIZE;
+        u8 *converted = size >= imageSize ? malloc(imageSize) : NULL;
+
+        if (converted != NULL) {
+            memcpy(converted, image, imageSize);
+            if (PortSave_MigrateImageV1(converted, imageSize)) {
+                for (int i = 0; i < 2 && !valid; i++) {
+                    memcpy(copy, converted + starts[i] * SAVE_SECTOR_SIZE, SAVE_SECTOR_SIZE * SAVE_PAGE_MAX);
+                    valid = SaveBlockFooter_Validate(sSaveDataPtr, (u64)copy, SAVE_BLOCK_ID_NORMAL);
+                }
+            }
+            free(converted);
+        }
     }
 
     Heap_Free(copy);

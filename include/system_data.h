@@ -1,6 +1,8 @@
 #ifndef POKEPLATINUM_SYSTEM_DATA_H
 #define POKEPLATINUM_SYSTEM_DATA_H
 
+#include "port_align.h"
+
 #include <nitro/rtc.h>
 
 #include "savedata.h"
@@ -10,13 +12,13 @@ typedef struct GameTime {
     RTCDate date;
     RTCTime time;
     u32 day;
-    s64 startTimestamp;
-    s64 firstCompletionTimestamp; // the first time the hall of fame was entered
+    s64 startTimestamp PORT_ALIGN4;
+    s64 firstCompletionTimestamp PORT_ALIGN4; // the first time the hall of fame was entered
     u32 penaltyInMinutes;
 } GameTime;
 
 typedef struct SystemData {
-    s64 rtcOffset;
+    s64 rtcOffset PORT_ALIGN4;
     u8 macAddress[6];
     u8 ownerBirthMonth;
     u8 ownerBirthDayOfMonth;

@@ -1037,6 +1037,7 @@ pokeplatinum_c += files(
     'port/gui_settings.cpp',
     'port/gear_data.c',
     'port/save_editor.c',
+    'port/save_migrate_v1.c',
     'port/gui_save_editor.cpp',
     'port/sim_config_prj.c',
     'port/sim_gui_prj.cpp',

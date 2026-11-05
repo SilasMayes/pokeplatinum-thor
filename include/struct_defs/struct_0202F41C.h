@@ -1,6 +1,8 @@
 #ifndef POKEPLATINUM_STRUCT_0202F41C_H
 #define POKEPLATINUM_STRUCT_0202F41C_H
 
+#include "port_align.h"
+
 #include "struct_defs/struct_0202F298_sub1.h"
 
 #include "battle_regulation.h"
@@ -14,7 +16,7 @@ typedef struct UnkStruct_0202F41C_t {
     BattleRegulation battleRegulation;
     u16 unk_48;
     u8 unk_4A[14];
-    u64 unk_58;
+    u64 unk_58 PORT_ALIGN4;
     UnkStruct_0202F298_sub1 unk_60;
 } UnkStruct_0202F41C;
 
