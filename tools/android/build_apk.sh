@@ -9,6 +9,18 @@
 # first launch, exactly like the PC releases.
 set -euo pipefail
 
+# Flavor: "dev" (default) installs as <applicationId>.dev with its own data and saves, so a
+# test build never touches the stable app. `--stable` (or APK_FLAVOR=stable) builds the
+# release id, signed with the fixed key: only for builds that were asked for.
+for arg in "$@"; do
+    case "$arg" in
+        --stable) APK_FLAVOR=stable ;;
+        --dev) APK_FLAVOR=dev ;;
+        *) echo "usage: $0 [--dev|--stable]" >&2; exit 2 ;;
+    esac
+done
+export APK_FLAVOR=${APK_FLAVOR:-dev}
+
 ROOT=$(cd "$(dirname "$0")/../.." && pwd)
 BUILD=${BUILD_ANDROID:-$ROOT/build_android}
 API=29
@@ -19,7 +31,12 @@ NDK=${ANDROID_NDK_HOME:?Set ANDROID_NDK_HOME to your Android NDK}
 TOOLCHAIN=$NDK/toolchains/llvm/prebuilt/${NDK_HOST_TAG:-$(uname -s | tr A-Z a-z)-x86_64}
 DEPS=$BUILD/deps
 PREFIX=$DEPS/prefix
-MESON="python3 $ROOT/subprojects/meson-1.12.0/meson.py"
+if [ -f "$ROOT/subprojects/meson-1.12.0/meson.py" ]; then
+    MESON="python3 $ROOT/subprojects/meson-1.12.0/meson.py"
+else
+    # no `make meson` checkout (a fresh worktree): the one on PATH (>= 1.3)
+    MESON=${MESON:-meson}
+fi
 
 mkdir -p "$DEPS" "$PREFIX/lib" "$PREFIX/include"
 
@@ -115,4 +132,5 @@ cp "$ROOT/res/pc_port/dwc_nv.bin" "$APP/assets/firmware.bin"
 
 # 6. APK
 (cd "$ROOT/android" && gradle --no-daemon assembleRelease)
+echo "Flavor: $APK_FLAVOR"
 echo "APK: $ROOT/android/app/build/outputs/apk/release/app-release.apk"

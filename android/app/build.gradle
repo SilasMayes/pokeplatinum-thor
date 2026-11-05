@@ -2,6 +2,14 @@ plugins {
     id 'com.android.application'
 }
 
+// APK_FLAVOR=dev installs beside the stable app (applicationId + ".dev", its own
+// Android/data folder and saves, label "Platinum dev"). tools/android/build_apk.sh defaults
+// to dev; CI and releases pass APK_FLAVOR=stable. A bare gradle run is stable.
+def apkFlavor = System.getenv('APK_FLAVOR') ?: 'stable'
+if (!(apkFlavor in ['dev', 'stable'])) {
+    throw new GradleException("APK_FLAVOR must be dev or stable, not '${apkFlavor}'")
+}
+
 android {
     namespace 'org.pokeplatinum.port'
     compileSdk 35
@@ -13,6 +21,11 @@ android {
         targetSdk 35
         versionCode Integer.parseInt(System.getenv('VERSION_CODE') ?: '1')
         versionName System.getenv('VERSION_NAME') ?: 'dev'
+
+        if (apkFlavor == 'dev') {
+            applicationIdSuffix '.dev'
+        }
+        manifestPlaceholders = [appLabel: apkFlavor == 'dev' ? 'Platinum dev' : 'Platinum']
 
         ndk {
             // libmain.so is built by meson for arm64 only (see .github/workflows/build_android.yml)

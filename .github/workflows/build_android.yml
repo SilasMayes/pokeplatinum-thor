@@ -51,6 +51,7 @@ jobs:
       - name: Build APK
         env:
           VERSION_CODE: ${{ github.run_number }}
+          APK_FLAVOR: stable   # CI builds the release id; build_apk.sh defaults to dev
         run: |
           # The runner's default NDK (r27, clang 18): the toolchain the code was tested with
           echo "NDK: $ANDROID_NDK_HOME"
