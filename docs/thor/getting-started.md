@@ -42,7 +42,8 @@ settings).
 ## Controls
 
 The built-in controller works out of the box (A, B, X, Y, L, R, Start, Select, D-pad).
-Remap under *Settings > Controls*.
+The left stick works as a second D-pad, in the game and in the menus. Remap under
+*Settings > Controls*.
 
 * **Back button / back gesture** or **R3**: open (and close) the settings.
 * **L3**: the Gear on the whole lower panel (or back).

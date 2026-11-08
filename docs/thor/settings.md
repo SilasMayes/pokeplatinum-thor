@@ -34,8 +34,9 @@ next page.
 * **GBA slot**: a Ruby, Sapphire, Emerald, FireRed or LeafGreen save in the DS's GBA
   slot (see [Features](features.md#gba-slot-pal-park-and-dual-slot-pokemon)).
 * **Link play**: host or join another device for trades and battles (see [Link play](link-play.md)).
-* **Sound**, **Controls** (fast-forward speed and button; remap buttons: tap a control,
-  press the button).
+* **Sound**, **Controls** (fast-forward speed and button; *Left stick as D-pad*, on by
+  default: the stick moves you and the menu cursors like the D-pad, one direction at a time,
+  and the D-pad keeps working; remap buttons: tap a control, press the button).
 * **Gear**, **Cheats** (see [The Gear](gear.md) and [Cheats](cheats-and-save-editor.md#cheats)).
 * **Advanced**: frame timings, the game's assertion checks, and *Developer windows* (the
   original floating debug windows: libntr, multiplayer, Gen Pokemon, Gen Items, Jump to
