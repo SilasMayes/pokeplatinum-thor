@@ -805,7 +805,14 @@ static void ov21_021E9AC8(UnkStruct_ov21_021E9A9C *param0)
     int v0;
 
     for (v0 = 0; v0 < 2; v0++) {
+#ifdef SDK_PORT
+        // The DS game frees paletteBuffers[0] twice and never [1]. The second free rewrites the
+        // heap's block lists from stale data, and the free of this screen right after it can
+        // crash (catching a new species, when its Pokedex entry closes)
+        Heap_Free(param0->paletteBuffers[v0]);
+#else
         Heap_Free(param0->paletteBuffers[0]);
+#endif
     }
 
     memset(param0, 0, sizeof(UnkStruct_ov21_021E9A9C));
